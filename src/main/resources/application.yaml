@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: demo
+
+  datasource:
+    url: jdbc:sqlite:./demo.db
+    driver-class-name: org.sqlite.JDBC
+
+    
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
