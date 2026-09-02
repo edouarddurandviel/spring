@@ -43,27 +43,27 @@ public class UserController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse addOneUser(@Valid @RequestBody UserRequestValidation request) {
-        UserResponse createdUser = userService.addOneUser(request);
-        return createdUser;
+        UserResponse user = userService.addOneUser(request);
+        return user;
     }
 
     @PostMapping("/create-account")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse createAccount(@Valid @RequestBody AccountValidation request) {
-        UserResponse createdUser = userService.createAccount(request);
-        return createdUser;
+        UserResponse user = userService.createAccount(request);
+        return user;
     }
 
     @PatchMapping("/update/{id}")
     public UserResponse addOneUser(@PathVariable Long id, @Valid @RequestBody UserRequestValidation request) {
-        UserResponse createdUser = userService.updateOneUser(id, request);
-        return createdUser;
+        UserResponse user = userService.updateOneUser(id, request);
+        return user;
     }
 
     @PatchMapping("/delete/{id}")
     public UserResponse deleteOneUser(@PathVariable Long id){
-        UserResponse deletedUser = userService.deleteOneUser(id);
-        return deletedUser;
+        UserResponse user = userService.deleteOneUser(id);
+        return user;
     }
 
     @PatchMapping("/delete/{id}/no-response")
