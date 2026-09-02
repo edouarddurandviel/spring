@@ -2,7 +2,7 @@ package com.myspring.demo.user;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import com.myspring.demo.user.dto.UserRequest;
+import com.myspring.demo.user.dto.UserRequestValidation;
 import com.myspring.demo.user.dto.UserResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class UserService {
     }
 
 
-    public UserResponse addOneUser(UserRequest request) {
+    public UserResponse addOneUser(UserRequestValidation request) {
 
         System.out.println(request);
 
@@ -55,7 +55,7 @@ public class UserService {
         );
     }
 
-    public UserResponse updateOneUser(Long id, UserRequest request) {
+    public UserResponse updateOneUser(Long id, UserRequestValidation request) {
         User user = repository.findById(id).orElseThrow(
             () -> new RuntimeException("User not found")
         );

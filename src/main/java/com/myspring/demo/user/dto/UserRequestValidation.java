@@ -4,25 +4,22 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record UserRequest(
+public record UserRequestValidation(
 
-        @NotBlank(message = "Name is required")
+        @NotNull(message = "Company is required")
+        Long companyId,
+
+        @NotBlank(message = "Fullname is required")
         String fullname,
 
         @NotBlank(message = "Email is required")
         @Email(message = "Email must be valid")
         String email,
 
-        @NotNull(message = "Company is required")
-        Long companyId,
-
-        @NotBlank(message = "password is required")
+        @NotBlank(message = "Password is required")
         String password,
 
-        @NotBlank(message = "position is required")
+        @NotBlank(message = "Position is required")
         String position
-
-
-) {
-}
+) {}
 

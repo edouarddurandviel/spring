@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.myspring.demo.user.dto.UserRequest;
+import com.myspring.demo.user.dto.UserRequestValidation;
 import com.myspring.demo.user.dto.UserResponse;
 
 import jakarta.validation.Valid;
@@ -41,13 +41,13 @@ public class UserController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse addOneUser(@Valid @RequestBody UserRequest request) {
+    public UserResponse addOneUser(@Valid @RequestBody UserRequestValidation request) {
         UserResponse createdUser = userService.addOneUser(request);
         return createdUser;
     }
 
     @PatchMapping("/update/{id}")
-    public UserResponse addOneUser(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
+    public UserResponse addOneUser(@PathVariable Long id, @Valid @RequestBody UserRequestValidation request) {
         UserResponse createdUser = userService.updateOneUser(id, request);
         return createdUser;
     }
