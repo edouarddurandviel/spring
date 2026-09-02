@@ -2,8 +2,9 @@ spring:
   application:
     name: demo
 
+  # should change url to ./data/demo.db  
   datasource:
-    url: jdbc:sqlite:./demo.db
+    url: jdbc:sqlite:demo.db 
     driver-class-name: org.sqlite.JDBC
 
     

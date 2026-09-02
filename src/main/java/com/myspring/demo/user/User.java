@@ -21,10 +21,10 @@ public class User {
     @Column(name = "password", nullable = false, unique = true)
     private String password;
 
-    @Column(name = "fullname", nullable = false)
+    @Column(name = "fullname", nullable = true)
     private String fullname;
 
-    @Column(name = "position", nullable = false)
+    @Column(name = "position", nullable = true)
     private String position;
 
     protected User(){}

@@ -2,12 +2,9 @@ package com.myspring.demo.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public record UserRequestValidation(
-
-        @NotNull(message = "Company is required")
-        Long companyId,
 
         @NotBlank(message = "Fullname is required")
         String fullname,
@@ -17,6 +14,7 @@ public record UserRequestValidation(
         String email,
 
         @NotBlank(message = "Password is required")
+        @Size(min = 8)
         String password,
 
         @NotBlank(message = "Position is required")

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myspring.demo.user.dto.UserRequestValidation;
+import com.myspring.demo.user.dto.AccountValidation;
 import com.myspring.demo.user.dto.UserResponse;
 
 import jakarta.validation.Valid;
@@ -43,6 +44,13 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse addOneUser(@Valid @RequestBody UserRequestValidation request) {
         UserResponse createdUser = userService.addOneUser(request);
+        return createdUser;
+    }
+
+    @PostMapping("/create-account")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponse createAccount(@Valid @RequestBody AccountValidation request) {
+        UserResponse createdUser = userService.createAccount(request);
         return createdUser;
     }
 

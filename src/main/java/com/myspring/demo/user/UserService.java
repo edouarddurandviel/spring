@@ -2,16 +2,22 @@ package com.myspring.demo.user;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.myspring.demo.user.dto.AccountValidation;
 import com.myspring.demo.user.dto.UserRequestValidation;
 import com.myspring.demo.user.dto.UserResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository repository;
+
+    @Autowired 
+    private PasswordEncoder passwordEncoder;
 
     public UserResponse getOneUser(Long id) {
         User user = repository.findById(id).orElseThrow(
@@ -35,9 +41,48 @@ public class UserService {
         return users;
     }
 
+    public UserResponse createAccount(AccountValidation request) {
+
+        if(repository.alreadyCreated(request.email())){
+            throw new RuntimeException("User Allready exists");
+        }
+         
+        User user = new User();
+        user.setUserEmail(request.email());
+        user.setUserFullName(request.fullname());
+        user.setUserPosition(request.position());
+        user.setUserPassword(passwordEncoder.encode(request.password()));
+
+        User createdUser = repository.save(user);
+
+        return new UserResponse(
+            createdUser.getUserId(),
+            createdUser.getUserFullName(),
+            createdUser.getUserEmail()
+        );
+    }
+
+
+    public UserResponse login(AccountValidation request) {
+
+        User user = repository.getOneUserWithEmail(request.email()).orElseThrow(
+            () -> new RuntimeException("User account does not exist")
+        );
+
+        if(!passwordEncoder.matches(request.password(), user.getUserPassword())){
+            throw new RuntimeException("Wrong password");
+        }
+
+        return new UserResponse(
+            user.getUserId(),
+            user.getUserFullName(),
+            user.getUserEmail()
+        );
+    }
+
 
     public UserResponse addOneUser(UserRequestValidation request) {
-
+        
         System.out.println(request);
 
         User user = new User();
