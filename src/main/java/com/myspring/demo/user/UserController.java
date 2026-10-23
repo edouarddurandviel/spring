@@ -3,6 +3,7 @@ package com.myspring.demo.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.myspring.demo.user.dto.UserRequestValidation;
-import com.myspring.demo.user.dto.AccountValidation;
+import com.myspring.demo.user.dto.UserValidation;
 import com.myspring.demo.user.dto.UserResponse;
 
 import jakarta.validation.Valid;
@@ -41,31 +41,31 @@ public class UserController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse addOneUser(@Valid @RequestBody UserRequestValidation request) {
+    public UserResponse addOneUser(@Valid @RequestBody UserValidation request) {
         UserResponse user = userService.addOneUser(request);
         return user;
     }
 
     @PostMapping("/create-account")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse createAccount(@Valid @RequestBody AccountValidation request) {
+    public UserResponse createAccount(@Valid @RequestBody UserValidation request) {
         UserResponse user = userService.createAccount(request);
         return user;
     }
 
     @PatchMapping("/update/{id}")
-    public UserResponse addOneUser(@PathVariable Long id, @Valid @RequestBody UserRequestValidation request) {
+    public UserResponse addOneUser(@PathVariable Long id, @Valid @RequestBody UserValidation request) {
         UserResponse user = userService.updateOneUser(id, request);
         return user;
     }
 
-    @PatchMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public UserResponse deleteOneUser(@PathVariable Long id){
         UserResponse user = userService.deleteOneUser(id);
         return user;
     }
 
-    @PatchMapping("/delete/{id}/no-response")
+    @DeleteMapping("/delete/{id}/no-response")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOneUserNoContent(@PathVariable Long id){
         userService.deleteOneUser(id);

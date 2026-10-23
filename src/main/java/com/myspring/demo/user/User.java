@@ -21,19 +21,19 @@ public class User {
     @Column(name = "password", nullable = false, unique = true)
     private String password;
 
-    @Column(name = "fullname", nullable = true)
-    private String fullname;
+    @Column(name = "firstname", nullable = true)
+    private String firstname;
 
-    @Column(name = "position", nullable = true)
-    private String position;
+    @Column(name = "lastname", nullable = true)
+    private String lastname;
 
     protected User(){}
 
-    public User(String email, String password, String fullname, String position){
+    public User(String email, String password, String firstname, String lastname){
         this.email  = email;
         this.password = password;
-        this.fullname = fullname;
-        this.position = position;
+        this.firstname = firstname;
+        this.lastname = lastname;
     }
 
     public Long getUserId(){
@@ -48,12 +48,12 @@ public class User {
         return email;
     }
 
-    public String getUserFullName(){
-        return fullname;
+    public String getUserFirstName(){
+        return firstname;
     }
 
-    public String getUserPosition(){
-        return position;
+    public String getUserLastName(){
+        return lastname;
     } 
 
     public void setUserId(Long id){
@@ -68,11 +68,11 @@ public class User {
         this.password = password;;
     }
 
-    public void setUserFullName(String fullname){
-        this.fullname = fullname;
+    public void setUserFirstName(String firstname){
+        this.firstname = firstname;
     }
 
-    public void setUserPosition(String position){
-        this.position = position;
+    public void setUserLastName(String lastname){
+        this.lastname = lastname;
     } 
 }

@@ -4,10 +4,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record UserRequestValidation(
+public record UserValidation(
 
-        @NotBlank(message = "Fullname is required")
-        String fullname,
+        @NotBlank(message = "First name is required")
+        String firstname,
+
+        @NotBlank(message = "Last name is required")
+        String lastname,
 
         @NotBlank(message = "Email is required")
         @Email(message = "Email must be valid")
@@ -15,9 +18,6 @@ public record UserRequestValidation(
 
         @NotBlank(message = "Password is required")
         @Size(min = 8)
-        String password,
-
-        @NotBlank(message = "Position is required")
-        String position
+        String password
 ) {}
 

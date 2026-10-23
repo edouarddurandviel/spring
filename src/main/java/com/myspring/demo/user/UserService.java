@@ -5,9 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.myspring.demo.user.dto.AccountValidation;
-import com.myspring.demo.user.dto.UserRequestValidation;
 import com.myspring.demo.user.dto.UserResponse;
+import com.myspring.demo.user.dto.UserValidation;
 
 
 @Service
@@ -25,7 +24,8 @@ public class UserService {
         );
         return new UserResponse(
             user.getUserId(),
-            user.getUserFullName(),
+            user.getUserFirstName(),
+            user.getUserLastName(),
             user.getUserEmail()
         );
     }
@@ -35,13 +35,14 @@ public class UserService {
         .stream()
         .map((user) -> new UserResponse( 
                     user.getUserId(),
-                    user.getUserFullName(),
+                    user.getUserFirstName(),
+                    user.getUserLastName(),
                     user.getUserEmail()
         )).toList();
         return users;
     }
 
-    public UserResponse createAccount(AccountValidation request) {
+    public UserResponse createAccount(UserValidation request) {
 
         if(repository.alreadyCreated(request.email())){
             throw new RuntimeException("User Allready exists");
@@ -49,21 +50,22 @@ public class UserService {
          
         User user = new User();
         user.setUserEmail(request.email());
-        user.setUserFullName(request.fullname());
-        user.setUserPosition(request.position());
+        user.setUserFirstName(request.firstname());
+        user.setUserLastName(request.lastname());
         user.setUserPassword(passwordEncoder.encode(request.password()));
 
         User createdUser = repository.save(user);
 
         return new UserResponse(
             createdUser.getUserId(),
-            createdUser.getUserFullName(),
+            createdUser.getUserFirstName(),
+            createdUser.getUserLastName(),
             createdUser.getUserEmail()
         );
     }
 
 
-    public UserResponse login(AccountValidation request) {
+    public UserResponse login(UserValidation request) {
 
         User user = repository.getOneUserWithEmail(request.email()).orElseThrow(
             () -> new RuntimeException("User account does not exist")
@@ -75,46 +77,49 @@ public class UserService {
 
         return new UserResponse(
             user.getUserId(),
-            user.getUserFullName(),
+            user.getUserFirstName(),
+            user.getUserLastName(),
             user.getUserEmail()
         );
     }
 
 
-    public UserResponse addOneUser(UserRequestValidation request) {
+    public UserResponse addOneUser(UserValidation request) {
         
         System.out.println(request);
 
         User user = new User();
-        user.setUserFullName(request.fullname());
+        user.setUserFirstName(request.firstname());
         user.setUserPassword(request.password());
-        user.setUserPosition(request.position());
+        user.setUserLastName(request.lastname());
         user.setUserEmail(request.email());
 
         User createdUser = repository.save(user);
 
         return new UserResponse(
             createdUser.getUserId(),
-            createdUser.getUserFullName(),
+            createdUser.getUserFirstName(),
+            createdUser.getUserLastName(),
             createdUser.getUserEmail()
         );
     }
 
-    public UserResponse updateOneUser(Long id, UserRequestValidation request) {
+    public UserResponse updateOneUser(Long id, UserValidation request) {
         User user = repository.findById(id).orElseThrow(
             () -> new RuntimeException("User not found")
         );
 
-        user.setUserFullName(request.fullname());
+        user.setUserFirstName(request.firstname());
         user.setUserPassword(request.password());
-        user.setUserPosition(request.position());
+        user.setUserLastName(request.lastname());
         user.setUserEmail(request.email());
 
         User updatedUser = repository.save(user);
 
         return new UserResponse(
             updatedUser.getUserId(),
-            updatedUser.getUserFullName(),
+            updatedUser.getUserFirstName(),
+            updatedUser.getUserLastName(),
             updatedUser.getUserEmail()
         );
     }
@@ -128,7 +133,8 @@ public class UserService {
 
         return new UserResponse(
             user.getUserId(),
-            user.getUserFullName(),
+            user.getUserFirstName(),
+            user.getUserLastName(),
             user.getUserEmail()
         );
     }
