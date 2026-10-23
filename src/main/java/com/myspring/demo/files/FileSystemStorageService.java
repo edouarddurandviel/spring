@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.myspring.demo.exceptions.StorageException;
 import com.myspring.demo.exceptions.StorageFileNotFoundException;
 
+
+// TODO: create Storage service
 @Service
 public class FileSystemStorageService implements StorageService {
 
@@ -34,6 +36,7 @@ public class FileSystemStorageService implements StorageService {
 
     this.rootLocation = Paths.get(properties.getLocation());
   }
+
 
   public void store(MultipartFile file) {
     try {
@@ -58,6 +61,7 @@ public class FileSystemStorageService implements StorageService {
     }
   }
 
+
   public Stream<Path> loadAll() {
     try {
       return Files.walk(this.rootLocation, 1)
@@ -69,6 +73,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
   }
+
 
   public Path load(String filename) {
     return rootLocation.resolve(filename);
@@ -99,7 +104,7 @@ public class FileSystemStorageService implements StorageService {
   }
 
 
-  public void init() {
+  public void initStorage() {
     try {
       Files.createDirectories(rootLocation);
     }
