@@ -49,7 +49,7 @@ public class AccountService {
 
     public AccountResponse createAccount(AccountValidation request) {
 
-        if(repository.alreadyCreated(request.email())){
+        if(repository.existsByEmail(request.email())){
             throw new RuntimeException("Account Allready exists");
         }
          

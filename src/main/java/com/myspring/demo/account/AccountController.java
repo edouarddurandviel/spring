@@ -32,21 +32,21 @@ public class AccountController {
 
     @GetMapping("/{id}")
     public AccountResponse getOneAccount(@PathVariable Long id) {
-        AccountResponse Account = accountService.getOneAccount(id);
-        return Account;
+        AccountResponse account = accountService.getOneAccount(id);
+        return account;
     }
 
     @GetMapping("/all")
     public List<AccountResponse> getAllAccounts() {
-        List<AccountResponse> Accounts = accountService.getAllAccounts();
-        return Accounts;
+        List<AccountResponse> account = accountService.getAllAccounts();
+        return account;
     }
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public AccountResponse addOneAccount(@Valid @RequestBody AccountValidation request) {
-        AccountResponse Account = accountService.addOneAccount(request);
-        return Account;
+        AccountResponse account = accountService.addOneAccount(request);
+        return account;
     }
 
     @PostMapping("/create-account")
@@ -59,14 +59,14 @@ public class AccountController {
 
     @PatchMapping("/update/{id}")
     public AccountResponse addOneAccount(@PathVariable Long id, @Valid @RequestBody AccountValidation request) {
-        AccountResponse Account = accountService.updateOneAccount(id, request);
-        return Account;
+        AccountResponse account = accountService.updateOneAccount(id, request);
+        return account;
     }
 
     @DeleteMapping("/delete/{id}")
     public AccountResponse deleteOneAccount(@PathVariable Long id){
-        AccountResponse Account = accountService.deleteOneAccount(id);
-        return Account;
+        AccountResponse account = accountService.deleteOneAccount(id);
+        return account;
     }
 
     @DeleteMapping("/delete/{id}/no-response")

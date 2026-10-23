@@ -14,102 +14,101 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.myspring.demo.exceptions.StorageException;
 import com.myspring.demo.exceptions.StorageFileNotFoundException;
 
 
-// TODO: create Storage service
 @Service
-public class FileSystemStorageService implements StorageService {
+public class FileSystemStorageService implements StorageServiceInterface {
 
-  private final Path rootLocation;
+  private final Path storagePath;
 
   @Autowired
-  public FileSystemStorageService(StorageProperties properties) {
-        
+  public FileSystemStorageService(StorageProperties properties) {    
         if(properties.getLocation().trim().length() == 0){
             throw new StorageException("File upload location can not be Empty."); 
         }
 
-    this.rootLocation = Paths.get(properties.getLocation());
+    this.storagePath = Paths.get(properties.getLocation());
   }
 
 
   public void store(MultipartFile file) {
     try {
       if (file.isEmpty()) {
-        throw new StorageException("Failed to store empty file.");
+        throw new StorageException("Cannot store empty file.");
       }
-      Path destinationFile = this.rootLocation.resolve(
+
+      Path destinationFilePath = this.storagePath.resolve(
           Paths.get(file.getOriginalFilename()))
           .normalize().toAbsolutePath();
-      if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
-        // This is a security check
+
+      if (!destinationFilePath.getParent().equals(this.storagePath.toAbsolutePath())) {
         throw new StorageException(
             "Cannot store file outside current directory.");
       }
+
       try (InputStream inputStream = file.getInputStream()) {
-        Files.copy(inputStream, destinationFile,
+        Files.copy(inputStream, destinationFilePath,
           StandardCopyOption.REPLACE_EXISTING);
       }
     }
     catch (IOException e) {
-      throw new StorageException("Failed to store file.", e);
+      throw new StorageException("Failed to store file: ", e);
     }
   }
 
 
   public Stream<Path> loadAll() {
     try {
-      return Files.walk(this.rootLocation, 1)
-        .filter(path -> !path.equals(this.rootLocation))
-        .map(this.rootLocation::relativize);
+      return Files.walk(this.storagePath, 1)
+        .filter(path -> !path.equals(this.storagePath))
+        .map(this.storagePath::relativize);
     }
     catch (IOException e) {
-      throw new StorageException("Failed to read stored files", e);
+      throw new StorageException("Failed to read stored files: ", e);
     }
 
   }
 
 
   public Path load(String filename) {
-    return rootLocation.resolve(filename);
+    return storagePath.resolve(filename);
   }
 
  
   public Resource loadAsResource(String filename) {
     try {
-      Path file = load(filename);
-      Resource resource = new UrlResource(file.toUri());
+      Path filePath = load(filename);
+      Resource resource = new UrlResource(filePath.toUri());
       if (resource.exists() || resource.isReadable()) {
         return resource;
       }
       else {
         throw new StorageFileNotFoundException(
-            "Could not read file: " + filename);
+            "File path does not exist, or is this file not readable: " + filename);
 
       }
     }
     catch (MalformedURLException e) {
-      throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+      throw new StorageFileNotFoundException("Url for this file is mal formed: " + filename, e);
     }
   }
 
 
   public void deleteAll() {
-    FileSystemUtils.deleteRecursively(rootLocation.toFile());
+    FileSystemUtils.deleteRecursively(storagePath.toFile());
   }
 
 
-  public void initStorage() {
+  public void init() {
     try {
-      Files.createDirectories(rootLocation);
+      Files.createDirectories(storagePath);
     }
     catch (IOException e) {
-      throw new StorageException("Could not initialize storage", e);
+      throw new StorageException("Could not initialize 'Storage': ", e);
     }
   }
 }

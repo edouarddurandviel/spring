@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -28,10 +29,12 @@ import org.springframework.http.HttpHeaders;
 public class FileController {
 
     private final FileSystemStorageService storage;
+    private final Environment env;
 
     @Autowired 
-    public FileController(FileSystemStorageService storage) {
+    public FileController(FileSystemStorageService storage, Environment env) {
         this.storage = storage;
+        this.env = env;
     }
 
     @GetMapping("/files/list-model")
@@ -39,7 +42,7 @@ public class FileController {
 
          model.addAttribute("files", this.storage.loadAll()
          .map(path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
-            "serveFile", path.getFileName().toString())
+            "serveOneFile", path.getFileName().toString())
             .build()
             .toUri()
             .toString()
@@ -50,42 +53,47 @@ public class FileController {
 
     }
 
-    @GetMapping("/files/{...fileName:.+}")
+    @GetMapping("/file/{...fileName:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFiles(@PathVariable String fileName){
+    public ResponseEntity<Resource> serveOneFile(@PathVariable String fileName){
 
-        Resource file = storage.loadAsResource(fileName);
+        Resource fileResource = storage.loadAsResource(fileName);
 
-        if(file == null){
+        if(fileResource == null){
             return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, 
-            "attachment, filename=\"" + file.getFilename() + "\"").body(file);
+            "attachment, filename=\"" + fileResource.getFilename() + "\"").body(fileResource);
     };
 
-    @PostMapping("/files/post")
+    // methode 1.
+    @PostMapping("/file/post")
     @ResponseBody
-    public ResponseEntity<String> uploadFiles(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
 
         storage.store(file);
 
-        return ResponseEntity.ok("Files uploaded");
+        return ResponseEntity.ok("File has been uploaded");
     }
 
-    @PostMapping("/upload")
+    // methode 2.
+    @PostMapping("/upload-pdf")
     public ResponseEntity<String> uploadPdf(@RequestParam("file") MultipartFile file) throws IOException {
 
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File is empty");
         }
 
-        // Path and File 
-        // (toAbsolutePath, createDirectories, resolve, getOriginalFileName, 
-        // getFileName, inputStream, getInputStream, copy
-        // StandardCopyOption.REPLACE_EXISTING)
-        Path path = Paths.get("/files").toAbsolutePath();
-        Files.createDirectories(path);
+       
+        String uploadDir = this.env.getProperty("file.upload-dir");
+        Path path = Paths.get(uploadDir).toAbsolutePath();
+        
+
+        if(!Files.isDirectory(path)){
+            Files.createDirectories(path);
+        }
+       
 
         Path destination = path.resolve(Paths.get(file.getOriginalFilename()).getFileName());
 
@@ -93,14 +101,12 @@ public class FileController {
             Files.copy(input, destination, StandardCopyOption.REPLACE_EXISTING);
         }
 
-
         return ResponseEntity.ok("File uploaded successfully");
     }
 
 
 
 
-    
     @ExceptionHandler(StorageFileNotFoundException.class)
      public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
 
