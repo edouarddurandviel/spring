@@ -36,9 +36,14 @@ public class FileController {
 
     @GetMapping("/files/list-model")
     public Model listUploadFiles(Model model){
-         model.addAttribute("files", this.storage.loadAll().map(
-        path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
-            "serveFile", path.getFileName().toString()).build().toUri().toString())
+
+         model.addAttribute("files", this.storage.loadAll()
+         .map(path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
+            "serveFile", path.getFileName().toString())
+            .build()
+            .toUri()
+            .toString()
+        )
         .collect(Collectors.toList()));
 
     return model;
@@ -48,7 +53,9 @@ public class FileController {
     @GetMapping("/files/{...fileName:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFiles(@PathVariable String fileName){
+
         Resource file = storage.loadAsResource(fileName);
+
         if(file == null){
             return ResponseEntity.notFound().build();
         }
@@ -60,6 +67,7 @@ public class FileController {
     @PostMapping("/files/post")
     @ResponseBody
     public ResponseEntity<String> uploadFiles(@RequestParam("file") MultipartFile file){
+
         storage.store(file);
 
         return ResponseEntity.ok("Files uploaded");
@@ -95,7 +103,9 @@ public class FileController {
     
     @ExceptionHandler(StorageFileNotFoundException.class)
      public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+
         return ResponseEntity.notFound().build();
+        
     }
     
 }
