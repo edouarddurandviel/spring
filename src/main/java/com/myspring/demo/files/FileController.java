@@ -29,18 +29,18 @@ import org.springframework.http.HttpHeaders;
 public class FileController {
 
     private final FileSystemStorageService storage;
-    private final Environment env;
+    private final StorageProperties properties;
 
-    @Autowired 
-    public FileController(FileSystemStorageService storage, Environment env) {
+    public FileController(FileSystemStorageService storage, StorageProperties properties) {
         this.storage = storage;
-        this.env = env;
+        this.properties = properties;
     }
+
 
     @GetMapping("/files/list-model")
     public Model listUploadFiles(Model model){
 
-         model.addAttribute("files", this.storage.loadAll()
+         model.addAttribute("files", storage.loadAll()
          .map(path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
             "serveOneFile", path.getFileName().toString())
             .build()
@@ -85,11 +85,7 @@ public class FileController {
             return ResponseEntity.badRequest().body("File is empty");
         }
 
-       
-        String uploadDir = this.env.getProperty("file.pdf-upload-dir");
-        Path path = Paths.get(uploadDir).toAbsolutePath();
-        
-
+        Path path = Paths.get(properties.getLocation()).toAbsolutePath();
         if(!Files.isDirectory(path)){
             Files.createDirectories(path);
         }
