@@ -86,7 +86,7 @@ public class FileController {
         }
 
        
-        String uploadDir = this.env.getProperty("file.upload-dir");
+        String uploadDir = this.env.getProperty("file.pdf-upload-dir");
         Path path = Paths.get(uploadDir).toAbsolutePath();
         
 
