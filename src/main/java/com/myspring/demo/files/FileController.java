@@ -83,7 +83,7 @@ public class FileController {
             return ResponseEntity.badRequest().body("File is empty");
         }
 
-        Path path = Paths.get(properties.getLocation()).toAbsolutePath();
+        Path path = Paths.get(properties.getPdfLocation()).toAbsolutePath();
         if(!Files.isDirectory(path)){
             Files.createDirectories(path);
         }
