@@ -2,29 +2,20 @@ package com.myspring.demo.files;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("storage")
+@ConfigurationProperties("file")
 public class StorageProperties {
 
-  private String pdfUloads;
-  private String uploadsLocation;
+  private String Location;
 
   /**
    * Folder location for storing files
    */
-  public String getPdfLocation() {
-    return pdfUloads;
+  public String getLocation() {
+    return Location;
   }
 
-  public void setPdfLocation(String pdfUloadsLocation) {
-    this.pdfUloads = pdfUloadsLocation;
-  }
-
-   public String getLocation() {
-    return uploadsLocation;
-  }
-
-  public void setLocation(String uploadsLocation) {
-    this.uploadsLocation = uploadsLocation;
+  public void setLocation(String Location) {
+    this.Location = Location;
   }
 
 }
