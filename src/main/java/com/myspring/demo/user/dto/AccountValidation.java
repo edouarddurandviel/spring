@@ -5,12 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record AccountValidation(
-        @NotBlank(message = "First name is required")
-        String firstname,
-
-        @NotBlank(message = "Last name is required")
-        String lastname,
-
+      
         @NotBlank(message = "Email is required")
         @Email(message = "Email must be valid")
         String email,

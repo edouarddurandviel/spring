@@ -2,6 +2,13 @@ package com.myspring.demo.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,10 +19,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.myspring.demo.user.dto.UserValidation;
+import com.myspring.demo.user.dto.UsersValidation;
 import com.myspring.demo.user.dto.UserResponse;
 
+import org.springframework.security.authentication.AuthenticationManager;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
 
 import java.util.List;
 
@@ -23,43 +35,104 @@ import java.util.List;
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired 
     private UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final SecurityContextRepository securityContextRepository;
+
+     public UserController(
+            UserService userService,
+            AuthenticationManager authenticationManager,
+            SecurityContextRepository securityContextRepository
+        ) {
+        this.authenticationManager = authenticationManager;
+        this.userService = userService;
+        this.securityContextRepository = securityContextRepository;
+    }
 
 
-    @GetMapping("/{id}")
-    public UserResponse getOneUser(@PathVariable Long id) {
+    // without @ResponseStatus 201
+    @PostMapping("/signup")
+    public ResponseEntity<UserResponse> createAccount(@Valid @RequestBody UsersValidation request) {
+        UserResponse user = userService.createAccount(request);
+    
+        return ResponseEntity
+            .status(HttpStatus.CREATED)     
+            .body(user);
+    }
+
+    // login VS logout (in SecurityConfiguration)
+    @PostMapping("/login")
+    public ResponseEntity<String> login(
+        @Valid @RequestBody UsersValidation request,
+        HttpServletRequest httpRequest,
+        HttpServletResponse httpResponse
+    ) {
+        try{
+            Authentication authentication =
+                authenticationManager.authenticate(
+                    UsernamePasswordAuthenticationToken.unauthenticated(
+                        request.email(),
+                        request.password()
+                    )
+                );
+
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+
+            context.setAuthentication(authentication);
+            SecurityContextHolder.setContext(context);
+
+            securityContextRepository.saveContext(
+                context, httpRequest, httpResponse
+            );
+
+            // inactivité 30 minutes
+            //httpRequest.getSession().setMaxInactiveInterval(30 * 60);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                .body("You are logged in !");
+
+
+
+        }catch(BadCredentialsException e){
+
+            SecurityContextHolder.clearContext();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Wrong email or password");
+
+        }
+    }
+
+     @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getOneUser(@PathVariable Long id) {
         UserResponse user = userService.getOneUser(id);
-        return user;
+   
+        return ResponseEntity.ok().body(user);
     }
 
     @GetMapping("/all")
-    public List<UserResponse> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> users = userService.getAllUsers();
-        return users;
+        return ResponseEntity.ok().body(users);
     }
 
+    // @ResponseStatus 201
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse addOneUser(@Valid @RequestBody UserValidation request) {
+    public UserResponse addOneUser(@Valid @RequestBody UsersValidation request) {
         UserResponse user = userService.addOneUser(request);
         return user;
     }
 
-    @PostMapping("/create-account")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse createAccount(@Valid @RequestBody UserValidation request) {
-        UserResponse user = userService.createAccount(request);
-        return user;
-    }
 
     @PatchMapping("/update/{id}")
-    public UserResponse addOneUser(@PathVariable Long id, @Valid @RequestBody UserValidation request) {
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse addOneUser(@PathVariable Long id, @Valid @RequestBody UsersValidation request) {
         UserResponse user = userService.updateOneUser(id, request);
         return user;
     }
 
     @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserResponse deleteOneUser(@PathVariable Long id){
         UserResponse user = userService.deleteOneUser(id);
         return user;

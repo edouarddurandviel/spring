@@ -3,62 +3,75 @@ package com.myspring.demo.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-
 import org.springframework.security.web.SecurityFilterChain;
-
-
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+    // is injected throught @Autowire
+    /////////////////////////////////////
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration)
+            throws Exception {
+        return configuration.getAuthenticationManager();
+    }
 
-    @Bean 
-    public UserDetailsService userDetailsService(
-    PasswordEncoder passwordEncoder) {
+    @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
+    /////////////////////////////////////
 
-    UserDetails user = User.builder()
-            .username("test")
-            .password(passwordEncoder.encode("change-me"))
-            .roles("USER")
-            .build();
-
-    return new InMemoryUserDetailsManager(user);
-}
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+        HttpSecurity http,
+        SecurityContextRepository repository
+    ) throws Exception {
         http
         .csrf(csrf -> csrf.disable())
+        .securityContext(context ->
+                context.securityContextRepository(repository)
+            )
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(
                 HttpMethod.POST,
-                "/api/user/create-account",
-                "/api/auth/login"
+                "/api/user/signup",
+                "/api/user/login",
+                "/api/user/lostPassword"
             ).permitAll()
             .anyRequest().authenticated()
         )
         .sessionManagement(session ->
             session.sessionCreationPolicy(
                 SessionCreationPolicy.IF_REQUIRED
+            )
+        ).logout(logout -> logout
+            .logoutUrl("/api/user/logout")
+            .invalidateHttpSession(true)
+            .clearAuthentication(true)
+            .deleteCookies("JSESSIONID")
+            .logoutSuccessHandler((request, response, authentication) ->
+                response.setStatus(200)
             )
         );
 
@@ -90,4 +103,5 @@ public class SecurityConfiguration {
     //     }
 
     // }
+    
 }
