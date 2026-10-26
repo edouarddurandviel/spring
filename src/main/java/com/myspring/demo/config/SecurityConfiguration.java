@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -22,10 +23,10 @@ public class SecurityConfiguration {
 
     // is injected throught @Autowire
     /////////////////////////////////////
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    // @Bean
+    // public PasswordEncoder passwordEncoder() {
+    //     return new BCryptPasswordEncoder();
+    // }
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -37,6 +38,19 @@ public class SecurityConfiguration {
     @Bean
     public SecurityContextRepository securityContextRepository() {
         return new HttpSessionSecurityContextRepository();
+    }
+
+    @Bean
+    public PasswordEncoder argonPasswordEncoder() {
+        // default built in configuration
+        return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
+        // return new Argon2PasswordEncoder(
+        //     16,       // salt: 16 bytes
+        //     32,       // hash: 32 bytes
+        //     1,        // parallelism
+        //     19456,    // memory: 19 MiB
+        //     2         // iterations
+        // );
     }
     /////////////////////////////////////
 

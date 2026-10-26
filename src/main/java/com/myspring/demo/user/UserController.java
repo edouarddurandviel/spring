@@ -51,8 +51,8 @@ public class UserController {
 
     // without @ResponseStatus 201
     @PostMapping("/signup")
-    public ResponseEntity<UserResponse> createAccount(@Valid @RequestBody UsersValidation request) {
-        UserResponse user = userService.createAccount(request);
+    public ResponseEntity<UserResponse> signup(@Valid @RequestBody UsersValidation request) {
+        UserResponse user = userService.signup(request);
     
         return ResponseEntity
             .status(HttpStatus.CREATED)     

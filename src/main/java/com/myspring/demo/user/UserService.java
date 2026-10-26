@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.myspring.demo.user.dto.UserResponse;
@@ -44,16 +45,16 @@ public class UserService {
         return users;
     }
 
-    public UserResponse createAccount(UsersValidation request) {
+    public UserResponse signup(UsersValidation request) {
 
         if(repository.alreadyCreated(request.email())){
             throw new RuntimeException("User Allready exists");
         }
 
         
-        byte[] bytes = SecurityUtils.randomBytes(16);
-        String salt = HexFormat.of().formatHex(bytes);
-         
+        byte[] saltInbytes = SecurityUtils.randomBytes(16);
+        String salt = HexFormat.of().formatHex(saltInbytes);
+
         Users user = new Users();
         user.setUserEmail(request.email());
         user.setUserSalt(salt);
