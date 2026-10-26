@@ -1,5 +1,6 @@
 package com.myspring.demo.config;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.web.http.CookieSerializer;
@@ -18,6 +19,8 @@ public class SessionConfiguration {
         serializer.setUseHttpOnlyCookie(true);
         serializer.setUseSecureCookie(true);
         serializer.setSameSite("Lax");
+        // set in application.properties
+        // serializer.setCookieMaxAge(7 * 24 * 60 * 60);
 
         return serializer;
     }
