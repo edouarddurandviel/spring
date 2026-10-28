@@ -104,8 +104,6 @@ public class UserService {
 
 
     public UserResponse addOneUser(UsersValidation request) {
-        
-        System.out.println(request);
 
         Users user = new Users();
        

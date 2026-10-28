@@ -13,7 +13,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -54,8 +53,6 @@ public class SecurityConfiguration {
     }
     /////////////////////////////////////
 
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(
         HttpSecurity http,
@@ -91,31 +88,4 @@ public class SecurityConfiguration {
 
     return http.build();
     }
-
-
-
-    // @Bean
-    // public CompromisedPasswordChecker compromisedPasswordChecker() {
-    //     return new HaveIBeenPwnedRestApiPasswordChecker();
-    // }
-
-    // static class CompromisedPasswordAuthenticationFailureHandler implements AuthenticationFailureHandler {
-
-    //     private final SimpleUrlAuthenticationFailureHandler defaultFailureHandler = new SimpleUrlAuthenticationFailureHandler(
-    //             "/api/auth/login-error");
-
-    //     private final RedirectStrategy redirect = new DefaultRedirectStrategy();
-
-    //     @Override
-    //     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-    //             AuthenticationException exception) throws IOException, ServletException {
-    //         if (exception instanceof CompromisedPasswordException) {
-    //             this.redirect.sendRedirect(request, response, "/reset-password");
-    //             return;
-    //         }
-    //         this.defaultFailureHandler.onAuthenticationFailure(request, response, exception);
-    //     }
-
-    // }
-    
 }

@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myspring.demo.user.dto.UsersValidation;
+import com.myspring.demo.service.UserSessionService;
+import com.myspring.demo.token.TokenService;
+import com.myspring.demo.token.dto.Token;
+import com.myspring.demo.token.dto.TokenResponse;
 import com.myspring.demo.user.dto.UserResponse;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,18 +38,24 @@ import java.util.List;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
+    private final TokenService tokenService;
+    //private final UserSessionService userSessionService;
     private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
 
      public UserController(
             UserService userService,
+            TokenService tokenService,
             AuthenticationManager authenticationManager,
-            SecurityContextRepository securityContextRepository
+            SecurityContextRepository securityContextRepository,
+            UserSessionService userSessionService
         ) {
         this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
         this.userService = userService;
         this.securityContextRepository = securityContextRepository;
+        //this.userSessionService = userSessionService;
     }
 
 
@@ -86,6 +96,17 @@ public class UserController {
 
             // inactivité 30 minutes
             //httpRequest.getSession().setMaxInactiveInterval(30 * 60);
+            // should not use PRINCIPAL_NAME records
+            // Map<String, ? extends Session> connected = userSessionService.findSessions();
+
+    
+
+            // TokenResponse token = tokenService.saveOneToken(
+            //     new Token(
+            //         httpRequest.getSession().getId(), 
+            //         30)
+            //     );
+
 
             return ResponseEntity.status(HttpStatus.OK)
                 .body("You are logged in !");

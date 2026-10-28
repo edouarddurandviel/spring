@@ -1,12 +1,14 @@
-
 package com.myspring.demo.service;
 
+import java.util.List;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.myspring.demo.security.ExtendedUserDetails;
 import com.myspring.demo.user.Users;
 import com.myspring.demo.user.UsersRepository;
 
@@ -28,10 +30,11 @@ public class ConnectionUserDetailsService implements UserDetailsService {
                 new UsernameNotFoundException("User not found")
             );
 
-        return org.springframework.security.core.userdetails.User
-            .withUsername(user.getUserEmail())
-            .password(user.getUserPassword())
-            .roles("USER")
-            .build();
+             return new ExtendedUserDetails(
+                user.getUserId(),
+                user.getUserEmail(),
+                user.getUserPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
     }
 }

@@ -53,3 +53,18 @@ You have a locally tagged image, and you can run it like this:
 docker run -p 8080:8080 -t springio/gs-spring-boot-docker
 ```
 
+Gradle add dependencies
+```bash
+# install new implementation 
+.\gradlew clean build --refresh-dependencies
+
+# compile class paths
+.\gradlew dependencies --configuration compileClasspath
+
+# clean java compile for deps
+.\gradlew clean compileJava --refresh-dependencies
+
+# verif for exemple : spring-session-jdbc
+.\gradlew dependencyInsight --dependency spring-session-jdbc --configuration compileClasspath
+```
+

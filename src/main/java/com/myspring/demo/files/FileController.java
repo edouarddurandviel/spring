@@ -35,7 +35,7 @@ public class FileController {
     }
 
 
-    @GetMapping("/files/list-model")
+    @GetMapping("/file/all")
     public Model listUploadFiles(Model model){
 
          model.addAttribute("files", storage.loadAll()
@@ -51,7 +51,7 @@ public class FileController {
 
     }
 
-    @GetMapping("/file/{...fileName:.+}")
+    @GetMapping("/file/one/{...fileName:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveOneFile(@PathVariable String fileName){
 
@@ -66,7 +66,7 @@ public class FileController {
     };
 
     // methode 1.
-    @PostMapping("/file/post")
+    @PostMapping("/file/upload")
     @ResponseBody
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
 
@@ -76,7 +76,7 @@ public class FileController {
     }
 
     // methode 2.
-    @PostMapping("/upload-pdf")
+    @PostMapping("/file/upload-pdf")
     public ResponseEntity<String> uploadPdf(@RequestParam("file") MultipartFile file) throws IOException {
 
         if (file.isEmpty()) {

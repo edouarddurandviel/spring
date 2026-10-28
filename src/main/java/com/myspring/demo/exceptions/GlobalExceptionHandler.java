@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
     ResponseEntity<ProblemDetail> handleNotFound(
             UserNotFoundException ex) {
 
-        var problem = ProblemDetail.forStatus(
+        ProblemDetail problem = ProblemDetail.forStatus(
                 HttpStatus.NOT_FOUND);
 
         problem.setTitle("User not found");
