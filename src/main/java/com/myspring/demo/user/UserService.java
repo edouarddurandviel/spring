@@ -1,15 +1,24 @@
 package com.myspring.demo.user;
 
+import java.io.IOException;
 import java.util.HexFormat;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.myspring.demo.rights.Rights;
+import com.myspring.demo.rights.dto.RightsResponse;
 import com.myspring.demo.user.dto.UserResponse;
+import com.myspring.demo.user.dto.UserWithRightsResponse;
 import com.myspring.demo.user.dto.UsersValidation;
 import com.myspring.demo.user.utils.SecurityUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 
 @Service
@@ -17,16 +26,42 @@ public class UserService {
 
     private final UsersRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
 
-    public UserService(UsersRepository repository, PasswordEncoder passwordEncoder){
+    public UserService(
+        UsersRepository repository, 
+        PasswordEncoder passwordEncoder, 
+        ObjectMapper objectMapper
+    ){
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.objectMapper = objectMapper;
     }
 
 
-    public UserResponse getOneUser(Long id) {
-        Users user = repository.findById(id).orElseThrow(
+    @Transactional(readOnly = true)
+    public UserWithRightsResponse getOneUser(Long id) {
+        Users user = repository.findWithRightsById(id).orElseThrow(
             () -> new RuntimeException("your User not found")
+        );
+
+        Rights rights = user.getRights();
+
+        RightsResponse content = objectMapper.convertValue(
+            rights.getRightsContent(),
+            RightsResponse.class
+        );
+       
+        return new UserWithRightsResponse(
+            user.getUserId(),
+            user.getUserEmail(),
+            content
+        );
+    }
+
+    public UserResponse getOneUserWithEmail(String email) {
+        Users user = repository.getOneUserWithEmail(email).orElseThrow(
+            () -> new RuntimeException("Email could not held finding the user.")
         );
         return new UserResponse(
             user.getUserId(),

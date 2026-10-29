@@ -3,6 +3,7 @@ package com.myspring.demo.user;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +20,9 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     @Query("SELECT EXISTS (SELECT 1 FROM Users WHERE email = :email)")
     Boolean alreadyCreated(@Param("email") String email);
+
+    // ok
+    @EntityGraph(attributePaths = "rights")
+    Optional<Users> findWithRightsById(Long id);
+    // ok
 }

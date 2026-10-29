@@ -1,13 +1,17 @@
-
 package com.myspring.demo.user;
 
 import java.time.LocalDateTime;
 
+import com.myspring.demo.rights.Rights;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -29,6 +33,15 @@ public class Users {
     @Column(name = "salt", nullable = true)
     private String salt;
 
+    // ok
+     @OneToOne(
+        mappedBy = "user",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    private Rights rights;
+    
     @Column(name = "\"createdAt\"", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -66,6 +79,12 @@ public class Users {
     public String getUserPassword() {
         return password;
     }
+
+    // ok
+    public Rights getRights() {
+        return rights;
+    }
+    // 
 
     public String getUserSalt() {
         return salt;

@@ -65,6 +65,6 @@ Gradle add dependencies
 .\gradlew clean compileJava --refresh-dependencies
 
 # verif for exemple : spring-session-jdbc
-.\gradlew dependencyInsight --dependency spring-session-jdbc --configuration compileClasspath
+.\gradlew dependencyInsight --dependency jackson-databind --configuration compileClasspath
 ```
 
