@@ -2,9 +2,12 @@ package com.myspring.demo.rights.dto;
 
 
 public record RightsResponse(
-    Role role,
-    Routes routes
+   Content content
 ) {
+    public record Content(
+        Role role,
+        Routes routes
+    ) {}
     public record Role(
         Long id,
         String name

@@ -1,6 +1,5 @@
 package com.myspring.demo.user;
 
-import java.io.IOException;
 import java.util.HexFormat;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import com.myspring.demo.user.dto.UserWithRightsResponse;
 import com.myspring.demo.user.dto.UsersValidation;
 import com.myspring.demo.user.utils.SecurityUtils;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -47,7 +45,7 @@ public class UserService {
 
         Rights rights = user.getRights();
 
-        RightsResponse content = objectMapper.convertValue(
+        RightsResponse perms = objectMapper.convertValue(
             rights.getRightsContent(),
             RightsResponse.class
         );
@@ -55,7 +53,7 @@ public class UserService {
         return new UserWithRightsResponse(
             user.getUserId(),
             user.getUserEmail(),
-            content
+            perms
         );
     }
 
