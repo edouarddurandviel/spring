@@ -36,7 +36,7 @@ public class FileController {
 
 
     @GetMapping("/file/all")
-    public Model listUploadFiles(Model model){
+    public ResponseEntity<Model> listUploadFiles(Model model){
 
          model.addAttribute("files", storage.loadAll()
          .map(path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
@@ -47,7 +47,7 @@ public class FileController {
         )
         .collect(Collectors.toList()));
 
-    return model;
+    return ResponseEntity.ok(model);
 
     }
 
@@ -64,6 +64,7 @@ public class FileController {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, 
             "attachment, filename=\"" + fileResource.getFilename() + "\"").body(fileResource);
     };
+    
 
     // methode 1.
     @PostMapping("/file/upload")
