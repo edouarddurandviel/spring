@@ -1,7 +1,7 @@
-# Spring.io users api starting point
+## Spring.io users api
 
-## Run with docker and Spring Boot
-### Build a Docker Image with the Spring Boot Build Plugin
+### Run with docker and Spring Boot. 
+Build a Docker Image with the Spring Boot Build Plugin
 You can build a tagged docker image  (Dockerfile is ignored):
 
 ```bash
