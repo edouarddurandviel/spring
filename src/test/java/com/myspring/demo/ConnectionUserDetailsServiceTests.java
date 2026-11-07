@@ -37,21 +37,6 @@ public class ConnectionUserDetailsServiceTests {
     @InjectMocks
     private ConnectionUserDetailsService userDetailsService;
 
-    private static Users user;
-
-
-    @BeforeAll// beforeach
-    static void setUp() {
-
-        user = mock(Users.class);
-
-        when(user.getUserEmail())
-            .thenReturn("john@gmail.com");
-
-        when(user.getUserPassword())
-            .thenReturn("encodedPassword");
-    }
-
 
 
     // test methods
@@ -63,17 +48,26 @@ public class ConnectionUserDetailsServiceTests {
         @DisplayName("Success")
         void shouldLoadUserByEmail() {
 
-            when(usersRepository.getOneUserWithEmail(user.getUserEmail()))
-            .thenReturn(Optional.of(user));
+            Users userMock = mock(Users.class);
+
+            when(userMock.getUserEmail())
+                .thenReturn("mail@mail.com");
+
+            when(userMock.getUserPassword())
+                .thenReturn("encodedPassword");
+
+
+            when(usersRepository.getOneUserWithEmail("mail@mail.com"))
+            .thenReturn(Optional.of(userMock));
 
             UserDetails result =
-                userDetailsService.loadUserByUsername(user.getUserEmail());
+                userDetailsService.loadUserByUsername("mail@mail.com");
 
             // Assert
             assertNotNull(result);
 
-            assertEquals(user.getUserEmail(), result.getUsername());
-            assertEquals(user.getUserPassword(), result.getPassword());
+            assertEquals("mail@mail.com", result.getUsername());
+            assertEquals("encodedPassword", result.getPassword());
 
 
             assertTrue(result.getAuthorities()
@@ -84,7 +78,7 @@ public class ConnectionUserDetailsServiceTests {
 
 
             verify(usersRepository, times(1))
-                .getOneUserWithEmail(user.getUserEmail());
+                .getOneUserWithEmail("mail@mail.com");
 
 
         }

@@ -63,5 +63,15 @@ Gradle add dependencies
 
 # verif for exemple : spring-session-jdbc
 .\gradlew dependencyInsight --dependency jackson-databind --configuration compileClasspath
+
+.\gradlew clean test
+
+.\gradlew test --info // detailed info
+
+.\gradlew.bat test --tests "com.myspring.demo.UserServiceTests"
+
+# set env
+SPRING_PROFILES_ACTIVE=prod .\gradlew bootRun
 ```
+
 

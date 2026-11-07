@@ -29,52 +29,18 @@ import com.myspring.demo.user.dto.UserResponse;
 import com.myspring.demo.user.dto.UserWithRightsResponse;
 
 @ExtendWith(MockitoExtension.class)
-
 @DisplayName("UserService class") // describe
 public class UserServiceTests {
 
-    @Mock
-    private UsersRepository usersRepository;
 
     @InjectMocks
     private UserService userService;
 
     @Mock
-    private ObjectMapper objectMapper;
+    private UsersRepository usersRepositoryMock;
 
-    private static Users userMock;
-
-    private static Rights rightsMock;
-
-
-    @BeforeAll// beforeach
-    static void setUp() {
-
-        userMock = mock(Users.class);
-
-        when(userMock.getUserEmail())
-            .thenReturn("john@gmail.com");
-
-
-        when(userMock.getUserId())
-            .thenReturn(1L);
-
-        rightsMock = mock(Rights.class);
-
-        when(rightsMock.getRightId())
-            .thenReturn(1L);
-
-             when(rightsMock.getRightId())
-            .thenReturn(1L);
-
-        when(rightsMock.getRightsUser())
-            .thenReturn(userMock);
-
-
-        when(userMock.getRights())
-            .thenReturn(rightsMock);
-    }
-
+    @Mock
+    private ObjectMapper objectMapperMock;
 
 
     @Nested
@@ -85,29 +51,44 @@ public class UserServiceTests {
         @DisplayName("Success")
         void shouldgetOneUser() {
 
-            when(usersRepository.findWithRightsById(userMock.getUserId()))
-            .thenReturn(Optional.of(userMock));
+            Users userMock = mock(Users.class);
+            Rights rightsMock = mock(Rights.class);
+            RightsResponse rightsResponseMock =
+                mock(RightsResponse.class);
+
+            when(userMock.getUserId()).thenReturn(1L);
+            when(userMock.getUserEmail())
+                .thenReturn("mail@mail.com");
+            when(userMock.getRights()).thenReturn(rightsMock);
+
+            when(rightsMock.getRightsContent())
+                .thenReturn(
+                    com.fasterxml.jackson.databind.node.JsonNodeFactory.instance
+                        .objectNode()
+                        .put("read", true)
+                        .put("write", true)
+                );
+
+
+            when(usersRepositoryMock.findWithRightsById(1L))
+                .thenReturn(Optional.of(userMock));
+
+            when(objectMapperMock.convertValue(
+                rightsMock.getRightsContent(),
+                RightsResponse.class
+            )).thenReturn(rightsResponseMock);
 
             UserWithRightsResponse result =
-                userService.getOneUser(userMock.getUserId());
+                userService.getOneUser(1L);
 
             // Assert
             assertNotNull(result);
-            assertEquals(userMock.getUserEmail(), result.userEmail());
-            assertEquals(userMock.getUserId(), result.userId());
+            assertEquals("mail@mail.com", result.userEmail());
+            assertEquals(1L, result.userId());
+    
+            verify(usersRepositoryMock).findWithRightsById(1L);
 
-
-            assertNotNull(rightsMock);
-            assertEquals(rightsMock.getClass(), Rights.class);
-            assertEquals(rightsMock.getRightsUser(), userMock);
-
-        
-            // should make test of records
-            assertEquals(userMock.getUserId(), result.userId());
-            verify(usersRepository).findWithRightsById(userMock.getUserId());
-
-            // objectMapper
-            verify(objectMapper).convertValue(
+            verify(objectMapperMock).convertValue(
                 rightsMock.getRightsContent(),
                 RightsResponse.class
             );
@@ -116,7 +97,7 @@ public class UserServiceTests {
         @Test
         @DisplayName("Fail")
         void shouldThrowExceptionWhenUserNotFound() {
-           when(usersRepository.findWithRightsById(200L))
+           when(usersRepositoryMock.findWithRightsById(200L))
                 .thenReturn(Optional.empty());
 
             RuntimeException exception = assertThrows(
@@ -139,16 +120,30 @@ public class UserServiceTests {
         @Test
         @DisplayName("Success")
         void shouldgetOneUser() {
+            Users userMock = mock(Users.class);
 
-            when(usersRepository.getOneUserWithEmail(userMock.getUserEmail()))
-                .thenReturn(Optional.of(userMock));
+            // define values
+            when(userMock.getUserEmail())
+                .thenReturn("mail@mail.com");
 
+            when(userMock.getUserId())
+                .thenReturn(1L);
+
+            when(usersRepositoryMock.getOneUserWithEmail(
+                "mail@mail.com"
+            )).thenReturn(Optional.of(userMock));
+
+            // use Action
             UserResponse result =
-                userService.getOneUserWithEmail(userMock.getUserEmail());
+                userService.getOneUserWithEmail("mail@mail.com");
 
+            // Assert
             assertNotNull(result);
-            assertEquals(userMock.getUserEmail(), result.email());
-            assertEquals(userMock.getUserId(), result.id());
+            assertEquals("mail@mail.com", result.email());
+            assertEquals(1L, result.id());
+
+            verify(usersRepositoryMock)
+                .getOneUserWithEmail("mail@mail.com");
 
         }
 
@@ -156,7 +151,7 @@ public class UserServiceTests {
         @Test
         @DisplayName("Fail")
         void shouldRuntimeException() {
-            when(usersRepository.getOneUserWithEmail("test-error@mail.com"))
+            when(usersRepositoryMock.getOneUserWithEmail("test-error@mail.com"))
                 .thenReturn(Optional.empty());
 
             RuntimeException exception = assertThrows(
