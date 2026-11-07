@@ -1,6 +1,5 @@
 package com.myspring.demo;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +51,7 @@ public class UserServiceTests {
         @DisplayName("Success")
         void shouldgetOneUser() {
 
+            // Arrange / define
             Users userMock = mock(Users.class);
             Rights rightsMock = mock(Rights.class);
             RightsResponse rightsResponseMock =
@@ -78,6 +79,7 @@ public class UserServiceTests {
                 RightsResponse.class
             )).thenReturn(rightsResponseMock);
 
+            // Act
             UserWithRightsResponse result =
                 userService.getOneUser(1L);
 
@@ -86,9 +88,9 @@ public class UserServiceTests {
             assertEquals("mail@mail.com", result.userEmail());
             assertEquals(1L, result.userId());
     
-            verify(usersRepositoryMock).findWithRightsById(1L);
+            verify(usersRepositoryMock, times(1)).findWithRightsById(1L);
 
-            verify(objectMapperMock).convertValue(
+            verify(objectMapperMock, times(1)).convertValue(
                 rightsMock.getRightsContent(),
                 RightsResponse.class
             );
