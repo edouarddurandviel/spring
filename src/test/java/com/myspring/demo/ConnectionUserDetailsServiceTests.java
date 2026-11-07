@@ -47,6 +47,7 @@ public class ConnectionUserDetailsServiceTests {
         @DisplayName("Success")
         void shouldLoadUserByEmail() {
 
+            // Arrange / define
             Users userMock = mock(Users.class);
 
             when(userMock.getUserEmail())
@@ -59,6 +60,7 @@ public class ConnectionUserDetailsServiceTests {
             when(usersRepository.getOneUserWithEmail("mail@mail.com"))
             .thenReturn(Optional.of(userMock));
 
+            // Act
             UserDetails result =
                 userDetailsService.loadUserByUsername("mail@mail.com");
 
