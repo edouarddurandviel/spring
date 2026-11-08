@@ -7,17 +7,16 @@ import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
 
-
 @Configuration
 @Profile("dev") // auto from spring.profiles.active=dev
-@EnableJdbcHttpSession
+@EnableJdbcHttpSession // saved in db
 public class SessionConfig {
-    // Overrides default application.properties
 
+    // Overrides default application.properties
     @Bean
 	public CookieSerializer cookieSerializer() {
 		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-		serializer.setCookieName("MY_JSESSIONID"); 
+		serializer.setCookieName("OVERIDE_MY_JSESSIONID"); 
 		serializer.setCookiePath("/"); 
 		serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); 
 		return serializer;

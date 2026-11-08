@@ -2,6 +2,7 @@ package com.myspring.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Configuration
+@Profile("dev") // auto from spring.profiles.active=dev
 @EnableWebSecurity
 public class SecurityConfiguration {
 
@@ -80,7 +82,7 @@ public class SecurityConfiguration {
             .logoutUrl("/api/user/logout")
             .invalidateHttpSession(true)
             .clearAuthentication(true)
-            .deleteCookies("JSESSIONID")
+            .deleteCookies("OVERIDE_MY_JSESSIONID")
             .logoutSuccessHandler((request, response, authentication) ->
                 response.setStatus(200)
             )
