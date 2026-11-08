@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,13 +22,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myspring.demo.user.dto.UsersValidation;
+import com.myspring.demo.user.utils.CookiesUtils;
 import com.myspring.demo.user.dto.UserResponse;
 import com.myspring.demo.user.dto.UserWithRightsResponse;
 
 import org.springframework.security.authentication.AuthenticationManager;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 
@@ -100,6 +104,25 @@ public class UserController {
 
         }
     }
+
+    @PostMapping("/signout")
+    public ResponseEntity<Void> logout( 
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        HttpSession session = request.getSession();
+        if(session != null){
+            session.invalidate();
+        } 
+        
+        CookiesUtils.clearCookies(request, "OVERIDE_MY_JSESSIONID");
+        SecurityContextHolder.clearContext();
+     
+        return ResponseEntity
+            .status(HttpStatus.OK)     
+            .build();
+    }
+
 
     @GetMapping("/principal")
     public ResponseEntity<UserResponse> principal(@AuthenticationPrincipal UserDetails principal) {

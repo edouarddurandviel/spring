@@ -18,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Configuration
-@Profile("dev") // auto from spring.profiles.active=dev
+// @Profile("dev") // auto from spring.profiles.active=dev
 @EnableWebSecurity
 public class SecurityConfiguration {
 
@@ -70,6 +70,7 @@ public class SecurityConfiguration {
                 HttpMethod.POST,
                 "/api/user/signup",
                 "/api/user/login",
+                "/api/user/signout", // logout from this specific route for demo purpose
                 "/api/user/lostPassword"
             ).permitAll()
             .anyRequest().authenticated()

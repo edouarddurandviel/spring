@@ -47,6 +47,7 @@ You can build a tagged docker image  (Dockerfile is ignored):
 
 You have a locally tagged image, and you can run it like this:
 ```bash
+
 docker run -p 8080:8080 -t springio/gs-spring-boot-docker
 ```
 
@@ -82,6 +83,26 @@ SPRING_PROFILES_ACTIVE=prod .\gradlew bootRun
 .\gradlew jacocoTestCoverageVerification	# Verify coverage threshold
 
 .\gradlew clean build # build
+```
+
+
+### Powershell Java version manager
+Windows
+```bash
+winget install jdx.mise
+
+mise install java@temurin-21
+mise install java@temurin-25
+
+mise use --global java@temurin-25
+# or inside project directory
+mise use java@temurin-25
+
+# check versions
+mise ls
+mise current java
+java -version
+javac -version
 ```
 
 
