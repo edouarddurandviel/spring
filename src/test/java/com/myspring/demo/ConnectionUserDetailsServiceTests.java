@@ -58,15 +58,16 @@ public class ConnectionUserDetailsServiceTests {
 
 
             when(usersRepository.getOneUserWithEmail("mail@mail.com"))
-            .thenReturn(Optional.of(userMock));
+                .thenReturn(Optional.of(userMock));
+
 
             // Act
             UserDetails result =
                 userDetailsService.loadUserByUsername("mail@mail.com");
 
+
             // Assert
             assertNotNull(result);
-
             assertEquals("mail@mail.com", result.getUsername());
             assertEquals("encodedPassword", result.getPassword());
 
@@ -77,7 +78,7 @@ public class ConnectionUserDetailsServiceTests {
                     authority.getAuthority().equals("ROLE_USER")
                 ));
 
-
+            // jest spyOn 
             verify(usersRepository, times(1))
                 .getOneUserWithEmail("mail@mail.com");
 

@@ -1,65 +1,39 @@
-
 services:
-  react:
-    container_name: react
-    build:
-      context: ./react
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./react:/usr/src/app
-      - /usr/src/app/node_modules
-    restart: unless-stoped
-    depends_on:
-      - spring
-    networks:
-    - spring_net
-
-
-  spring:
-    container_name: spring
-    ports:
-    - "8080:8080"
-    build:
-      context: ./demo
-    environment:
-      NODE_ENV: docker
-    restart: unless-stoped
-    depends_on:
-      - postgresdb
-    networks:
-      - spring_net
-
-
-  postgresdb:
+  postgres:
     image: postgres:16
-    container_name: postgresdb
+    container_name: demo-postgres
+    restart: unless-stopped
     environment:
+      POSTGRES_DB: mydatabase
       POSTGRES_USER: dbuser
-      POSTGRES_PASSWORD: dbpassword
-      POSTGRES_DB: companiesdb
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres_data/database.202610151426.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dbuser -d companiesdb"]
+      test: ["CMD-SHELL", "pg_isready -U dbuser -d mydatabase"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 20s
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./postgres/data/database.202607071422.sql:/docker-entrypoint-initdb.d/init.sql
-    restart: unless-stoped
+
+  app:
+    build: .
+    container_name: demo-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
-      - "5432:5432"
-    networks:
-      - spring_net
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATABASE_URL: jdbc:postgresql://postgres:5432/mydatabase
+      DATABASE_USERNAME: dbuser
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
 
 volumes:
   pgdata:
-
-networks:
-  spring_net:
-    driver: bridge
-
-  # global dump with psql
-
- 
+  postgres_data:

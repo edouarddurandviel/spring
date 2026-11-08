@@ -1,15 +1,19 @@
 # syntax=docker/dockerfile:1
 
 # With no user privileges 
-FROM eclipse-temurin:17
+FROM eclipse-temurin:25-jre
 
-ARG JAR_FILE=target/*.jar
+WORKDIR /app
 
-COPY ${JAR_FILE} app.jar
+COPY build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+EXPOSE 8081
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # Build and run the application
+
+# java -jar target/demo-0.0.1-SNAPSHOT.jar
 
 # ./gradlew build
 # docker build --build-arg 'JAR_FILE=build/libs/*-SNAPSHOT.jar' -t springio/gs-spring-boot-docker .

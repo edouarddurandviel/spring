@@ -64,6 +64,8 @@ Gradle add dependencies
 # verif for exemple : spring-session-jdbc
 .\gradlew dependencyInsight --dependency jackson-databind --configuration compileClasspath
 
+
+# TESTINGS
 .\gradlew clean test
 
 .\gradlew test --info // detailed info
@@ -72,6 +74,14 @@ Gradle add dependencies
 
 # set env
 SPRING_PROFILES_ACTIVE=prod .\gradlew bootRun
+
+# code coverage
+.\gradlew jacocoTestReport	# Generate coverage report
+# file:///C:/Users/Edouard/_Spring/demo/build/reports/jacoco/test/html/index.html
+
+.\gradlew jacocoTestCoverageVerification	# Verify coverage threshold
+
+.\gradlew clean build # build
 ```
 
 
